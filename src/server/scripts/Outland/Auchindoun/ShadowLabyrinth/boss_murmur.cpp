@@ -64,17 +64,17 @@ public:
             SetCombatMovement(false);
         }
 
-        void Reset()
+        void Reset() OVERRIDE
         {
             events.ScheduleEvent(EVENT_SONIC_BOOM, 30000);
             events.ScheduleEvent(EVENT_MURMURS_TOUCH, urand(8000, 20000));
             events.ScheduleEvent(EVENT_RESONANCE, 5000);
             events.ScheduleEvent(EVENT_MAGNETIC_PULL, urand(15000, 30000));
             if (IsHeroic())
-			{
+            {
                 events.ScheduleEvent(EVENT_THUNDERING_STORM, 15000);
                 events.ScheduleEvent(EVENT_SONIC_SHOCK, 10000);
-			}
+            }
 
             //database should have `RegenHealth`=0 to prevent regen
             uint32 hp = me->CountPctFromMaxHealth(40);
@@ -100,16 +100,16 @@ public:
             }
         }
 
-        void EnterCombat(Unit* /*who*/) { }
+        void EnterCombat(Unit* /*who*/) OVERRIDE {}
 
         // Sonic Boom instant damage (needs core fix instead of this)
-        void SpellHitTarget(Unit* target, const SpellInfo* spell)
+        void SpellHitTarget(Unit* target, const SpellInfo* spell) OVERRIDE
         {
             if (target && target->IsAlive() && spell && spell->Id == uint32(SPELL_SONIC_BOOM_EFFECT))
                 me->DealDamage(target, (target->GetHealth()*90)/100, NULL, SPELL_DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NATURE, spell);
         }
 
-        void UpdateAI(uint32 diff)
+        void UpdateAI(uint32 diff) OVERRIDE
         {
             //Return since we have no target or casting
             if (!UpdateVictim() || me->IsNonMeleeSpellCasted(false))
@@ -160,7 +160,7 @@ public:
                                     DoCast(target, SPELL_THUNDERING_STORM, true);
                         events.ScheduleEvent(EVENT_THUNDERING_STORM, 15000);
                         break;
-					}
+                    }
                     case EVENT_SONIC_SHOCK:
                         if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0, 20, false))
                             if (target->IsAlive())
@@ -188,12 +188,12 @@ public:
 
             DoMeleeAttackIfReady();
         }
-
-        CreatureAI* GetAI(Creature* creature) const
-        {
-            return new boss_murmurAI (creature);
-        }
     };
+
+    CreatureAI* GetAI(Creature* creature) const OVERRIDE
+    {
+        return new boss_murmurAI(creature);
+    }
 };
 
 void AddSC_boss_murmur()
